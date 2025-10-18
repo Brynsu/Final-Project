@@ -3,3 +3,5 @@ public class main{
     System.out.println("POTANGENANGGGG JAVAAAA");
     }
 }
+
+POTANG INA NYOOOOOOOOO

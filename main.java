@@ -74,5 +74,12 @@ public class Main {
         }
         System.out.println("You have chosen " + playerPet.getName() + " as your pet!");
     }
-//
+//Please ko implement sa Battle System Diri
+//Ari Start
+
+//Please ko implement sa Feeding System diri
+// Ari Start
+
+// Diri kay ang Inventory
+// Ari Start
 

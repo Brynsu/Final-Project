@@ -76,7 +76,111 @@ public class Main {
     }
 //Please ko implement sa Battle System Diri
 //Ari Start
-
+ 
+public static void battle() {
+        viewInventory();
+        victories++;
+        Enemy enemy = new Enemy();
+ 
+        if (victories % 5 == 0) {
+            System.out.println("A powerful Boss appears for the " + victories + "th victory!");
+            if (bossBattle(enemy)) {
+                System.out.println("You defeated the Boss!");
+                foodCount += new Random().nextInt(16) + 5;
+                inventory.add("Food x" + (new Random().nextInt(16) + 5));
+                getRandomItem();
+            } else {
+                System.out.println("You lost the boss battle.");
+            }
+        } else {
+            System.out.println("A wild opponent appears!");
+            if (enemyBattle(enemy)) {
+                System.out.println("You won the battle!");
+                foodCount += new Random().nextInt(16) + 5;
+                inventory.add("Food x" + (new Random().nextInt(16) + 5));
+                getRandomItem();
+                if (foodCount >= 50 && foodCount < 100) {
+                    System.out.println(playerPet.getName() + " is evolving!");
+                    playerPet.evolve();
+                } else if (foodCount >= 100) {
+                    System.out.println(playerPet.getName() + " has evolved again!");
+                    playerPet.evolve();
+                }
+            } else {
+                System.out.println("You lost the battle. Better luck next time!");
+            }
+        }
+    }
+ 
+    public static boolean bossBattle(Enemy enemy) {
+        Random random = new Random();
+        int winChance = random.nextInt(100);
+        printBattleScene(enemy);
+        return winChance > 60;
+    }
+ 
+    public static boolean enemyBattle(Enemy enemy) {
+        Random random = new Random();
+        printBattleScene(enemy);
+        return random.nextInt(100) > 40;
+    }
+ 
+    public static void printBattleScene(Enemy enemy) {
+        System.out.println("\n--- Battle Start! ---");
+        System.out.println("You are fighting a " + enemy.getName() + "!");
+        System.out.println("Enemy Health: " + enemy.getHealth());
+        System.out.println("Your Pet: " + playerPet.getName() + " | Health: " + playerPet.getHealth());
+ 
+        for (int i = 0; i < 5; i++) {
+            try {
+                Thread.sleep(1000);
+                System.out.println("Fight Round " + (i + 1) + "...");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+ 
+        System.out.println("\nChoose your attack:");
+        System.out.println("1. Basic Attack");
+        System.out.println("2. Special Attack");
+        System.out.println("3. Defend");
+        System.out.print("Enter your choice: ");
+        int attackChoice = scanner.nextInt();
+        scanner.nextLine();
+ 
+        int damageToEnemy = 0;
+        int damageToPlayer = new Random().nextInt(enemy.getAttackPower());
+ 
+        switch (attackChoice) {
+            case 1:
+                damageToEnemy = new Random().nextInt(playerPet.getAttackPower());
+                System.out.println("You use Basic Attack! You deal " + damageToEnemy + " damage.");
+                break;
+            case 2:
+                damageToEnemy = new Random().nextInt(playerPet.getAttackPower() * 2);
+                System.out.println("You use Special Attack! You deal " + damageToEnemy + " damage.");
+                break;
+            case 3:
+                System.out.println("You defend! Your pet takes less damage this round.");
+                damageToPlayer = damageToPlayer / 2;
+                break;
+            default:
+                System.out.println("Invalid choice! You missed your turn.");
+        }
+ 
+        if (damageToPlayer > playerPet.getHealth()) {
+            damageToPlayer = playerPet.getHealth();
+        }
+ 
+        enemy.takeDamage(damageToEnemy);
+        playerPet.takeDamage(damageToPlayer);
+ 
+        if (enemy.getHealth() <= 0) {
+            System.out.println("You defeated the " + enemy.getName() + "!");
+        } else if (playerPet.getHealth() <= 0) {
+            System.out.println("Your pet has been defeated. You lost the battle.");
+        }
+    }  
 //Please ko implement sa Feeding System diri
 // Ari Start
 

@@ -183,6 +183,50 @@ public static void battle() {
     }  
 //Please ko implement sa Feeding System diri
 // Ari Start
+    public static void feedPet() {
+        System.out.println("You have " + foodCount + " food(s) available.");
+        System.out.print("How many foods do you want to feed your pet? ");
+        int foodToFeed = scanner.nextInt();
+        scanner.nextLine();
+ 
+        if (foodToFeed <= foodCount && foodToFeed > 0) {
+            foodCount -= foodToFeed;
+            System.out.println("You fed your pet " + foodToFeed + " food(s)! Remaining food: " + foodCount);
+            playerPet.increaseHappiness(foodToFeed);
+        } else if (foodToFeed > foodCount) {
+            System.out.println("You don't have enough food!");
+        } else {
+            System.out.println("Invalid amount of food.");
+        }
+    }
+ 
+    public static void viewPetStats() {
+        System.out.println(playerPet);
+    }
+ 
+    public static void viewInventory() {
+        System.out.println("Your Inventory:");
+        System.out.println("Food: " + foodCount);
+        for (String item : inventory) {
+            System.out.println(item);
+        }
+    }
+ 
+    public static void getRandomItem() {
+        Random rand = new Random();
+        int chance = rand.nextInt(100);
+ 
+        if (chance < 30) {
+            inventory.add("Stone (Elemental)");
+            System.out.println("You found a stone!");
+        } else if (chance < 60) {
+            inventory.add("Armor");
+            System.out.println("You found an armor!");
+        } else {
+            System.out.println("No item found.");
+        }
+    }
+}
 
 // Diri kay ang Inventory
 // Ari Start

@@ -1,16 +1,24 @@
 import java.util.Random;
 import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     static Pet pet;
+    static JFrame statusWindow;
+    static JLabel statusLabel;
 
     public static void main(String[] args) {
+        
+        createStatusWindow();
+
         System.out.println("Welcome to Axie Arena! >///<");
         choosePet();
 
         boolean playing = true;
         while (playing) {
+            updateStatusWindow();  
             System.out.println("\n1. Battle");
             System.out.println("2. Feed Pet");
             System.out.println("3. View Pet Stats");
@@ -28,6 +36,27 @@ public class Main {
                 }
                 default -> System.out.println("Invalid choice!");
             }
+        }
+    }
+
+    private static void createStatusWindow() {
+        statusWindow = new JFrame("Pet Status");
+        statusWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        statusWindow.setSize(300, 100);
+        statusWindow.setLayout(new FlowLayout());
+
+        statusLabel = new JLabel("Waiting for pet selection...");
+        statusWindow.add(statusLabel);
+
+        statusWindow.setLocation(800, 100);  
+        statusWindow.setVisible(true);
+    }
+
+    private static void updateStatusWindow() {
+        if (pet != null) {
+            statusLabel.setText("<html>Pet: " + pet.getName() +
+                    "<br>Health: " + pet.getHealth() +
+                    "<br>Happiness: " + pet.getHappiness() + "</html>");
         }
     }
 
@@ -57,6 +86,7 @@ public class Main {
         System.out.println("Enemy Health: " + enemy.getHealth());
 
         while (pet.getHealth() > 0 && enemy.getHealth() > 0) {
+            updateStatusWindow();
             System.out.println("\nChoose attack:");
             System.out.println("1. Basic Attack");
             System.out.println("2. Special Attack");
@@ -92,6 +122,7 @@ public class Main {
         if (pet.getHealth() < 100) {
             System.out.println("Your pet feels stronger and heals a bit!");
         }
+        updateStatusWindow();
     }
 }
 

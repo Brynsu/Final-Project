@@ -1,26 +1,33 @@
-public class Level {
+public class level {
     private int level;
     private int experience;
-
-    public Level() {
+    private int expToNextLevel;
+ 
+    public level() {
         this.level = 1;
         this.experience = 0;
+        this.expToNextLevel = 50;
     }
-
-    public int getLevel() { return level; }
-
-    public void addExperience(int points) {
-        experience += points;
+ 
+    public int getLevel() {
+        return level;
+    }
+ 
+    public int getExperience() {
+        return experience;
+    }
+ 
+    public void addExperience(int exp) {
+        experience += exp;
         checkLevelUp();
     }
-
+ 
     private void checkLevelUp() {
-        if (experience >= 100) {
+        while (experience >= expToNextLevel) {
+            experience -= expToNextLevel;
             level++;
-            experience -= 100;
-            System.out.println("Your pet leveled up to level " + level + "!");
+            expToNextLevel += 25; // Leveling curve
+            System.out.println("🎉 Your pet leveled up to Level " + level + "!");
         }
     }
-
-    public int getExperience() { return experience; }
 }

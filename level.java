@@ -1,8 +1,8 @@
-public class Level {
+public class level {
     private int level;
     private int experience;
 
-    public Level() {
+    public level() {
         this.level = 1;
         this.experience = 0;
     }

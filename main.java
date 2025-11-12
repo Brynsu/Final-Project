@@ -1,10 +1,10 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class Main {
+public class main {
     static Scanner scanner = new Scanner(System.in);
     static Pet pet;
-    static Level petLevel = new Level();
+    static level petLevel = new level();
 
     public static void main(String[] args) {
         showTitleScreen();

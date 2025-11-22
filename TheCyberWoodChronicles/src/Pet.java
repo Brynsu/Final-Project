@@ -82,7 +82,7 @@ public abstract class Pet {
         }
     }
 
-    
+
     public abstract String useBasicAttack(Enemy enemy);
     public abstract String useSkill(Enemy enemy);
     public abstract String useUltimate(Enemy enemy);

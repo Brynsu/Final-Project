@@ -2,9 +2,10 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.util.Random;
 
-public class Pet {
+
+public abstract class Pet {
     protected static final Random rand = new Random();
-    
+
     protected String name;
     protected String imagePath;
     protected int health;
@@ -15,7 +16,7 @@ public class Pet {
     protected int evolutionStage;
     protected int mana;
     protected int maxMana;
-    
+
     public Pet(String name, String imagePath, int maxHealth, int attackPower, int defense) {
         this.name = name;
         this.imagePath = imagePath;
@@ -28,7 +29,7 @@ public class Pet {
         this.maxMana = 100;
         this.mana = 50;
     }
-    
+
     public String getName() { return name; }
     public int getHealth() { return health; }
     public int getMaxHealth() { return maxHealth; }
@@ -37,30 +38,30 @@ public class Pet {
     public int getHappiness() { return happiness; }
     public int getMana() { return mana; }
     public int getMaxMana() { return maxMana; }
-    
+
     public Image getImage() {
         java.net.URL url = getClass().getResource(imagePath);
         return url != null ? new ImageIcon(url).getImage() : null;
     }
-    
+
     public void takeDamage(int damage) {
         int actualDamage = Math.max(1, damage - defense);
         health -= actualDamage;
         if (health < 0) health = 0;
     }
-    
+
     public void increaseHealth(int amount) {
         health = Math.min(maxHealth, health + amount);
     }
-    
+
     public void increaseHappiness(int amount) {
         happiness = Math.min(100, happiness + amount);
     }
-    
+
     public void increaseMana(int amount) {
         mana = Math.min(maxMana, mana + amount);
     }
-    
+
     public boolean useMana(int amount) {
         if (mana >= amount) {
             mana -= amount;
@@ -68,7 +69,7 @@ public class Pet {
         }
         return false;
     }
-    
+
     public void evolve() {
         if (evolutionStage < 3) {
             evolutionStage++;
@@ -80,91 +81,73 @@ public class Pet {
             mana = Math.min(maxMana, mana + 20);
         }
     }
+
     
-    public String useBasicAttack(Enemy enemy) {
-        int damage = rand.nextInt(attackPower) + 5;
-        enemy.takeDamage(damage);
-        increaseMana(15);
-        return String.format("Basic Attack deals %d damage! +15 Mana", damage);
-    }
-    
-    public String useSkill(Enemy enemy) {
-        if (!useMana(40)) {
-            return "Not enough mana! Need 40 mana for Skill.";
-        }
-        int damage = (int)(attackPower * 1.5);
-        enemy.takeDamage(damage);
-        return String.format("Skill deals %d damage! -40 Mana", damage);
-    }
-    
-    public String useUltimate(Enemy enemy) {
-        if (!useMana(80)) {
-            return "Not enough mana! Need 80 mana for Ultimate.";
-        }
-        int damage = attackPower * 2;
-        enemy.takeDamage(damage);
-        return String.format("Ultimate deals %d damage! -80 Mana", damage);
-    }
-    
-    public String getBasicAttackName() { return "Basic Attack"; }
-    public String getSkillName() { return "Skill"; }
-    public String getUltimateName() { return "Ultimate"; }
-    
-    public String getBasicAttackDescription() { return "Deals basic damage +15 Mana"; }
-    public String getSkillDescription() { return "Deals 150% damage (40 Mana)"; }
-    public String getUltimateDescription() { return "Deals 200% damage (80 Mana)"; }
+    public abstract String useBasicAttack(Enemy enemy);
+    public abstract String useSkill(Enemy enemy);
+    public abstract String useUltimate(Enemy enemy);
+
+    public abstract String getBasicAttackName();
+    public abstract String getSkillName();
+    public abstract String getUltimateName();
+
+    public abstract String getBasicAttackDescription();
+    public abstract String getSkillDescription();
+    public abstract String getUltimateDescription();
 }
+
 
 class FireDragon extends Pet {
     private boolean rageMode;
-    
+
     public FireDragon() {
         super("Fire Dragon", "/Images/firedragon.png", 100, 20, 10);
         this.rageMode = false;
     }
-    
+
     @Override
     public String useBasicAttack(Enemy enemy) {
         int damage = rand.nextInt(attackPower) + 8;
         enemy.takeDamage(damage);
         increaseMana(20);
-        return String.format("Claw Swipe deals %d damage! +20 Mana", damage);
+        return "Claw Swipe deals " + damage + " damage! +20 Mana";
     }
-    
+
     @Override
     public String useSkill(Enemy enemy) {
-        if (!useMana(45)) {
-            return "Not enough mana! Need 45 mana for Fire Breath.";
-        }
+        if (!useMana(45)) return "Not enough mana! Need 45 mana for Fire Breath.";
+
         int damage = (int)(attackPower * 1.8);
         enemy.takeDamage(damage);
         takeDamage(8);
+
         if (health < maxHealth * 0.3 && !rageMode) {
             rageMode = true;
             attackPower += 10;
-            return String.format("Fire Breath deals %d damage! (Took 8 self-damage) -45 Mana RAGE MODE ACTIVATED!", damage);
+            return "Fire Breath deals " + damage + " damage! (Took 8 self-damage) -45 Mana RAGE MODE ACTIVATED!";
         }
-        return String.format("Fire Breath deals %d damage! (Took 8 self-damage) -45 Mana", damage);
+
+        return "Fire Breath deals " + damage + " damage! (Took 8 self-damage) -45 Mana";
     }
-    
+
     @Override
     public String useUltimate(Enemy enemy) {
-        if (!useMana(85)) {
-            return "Not enough mana! Need 85 mana for Inferno Blast.";
-        }
+        if (!useMana(85)) return "Not enough mana! Need 85 mana for Inferno Blast.";
+
         int damage = attackPower * 3;
         enemy.takeDamage(damage);
         takeDamage(15);
-        return String.format("INFERNO BLAST deals %d MASSIVE damage! (Took 15 self-damage) -85 Mana", damage);
+
+        return "INFERNO BLAST deals " + damage + " MASSIVE damage! (Took 15 self-damage) -85 Mana";
     }
-    
+
     @Override
     public String getBasicAttackName() { return "Claw Swipe"; }
     @Override
     public String getSkillName() { return "Fire Breath"; }
     @Override
     public String getUltimateName() { return "Inferno Blast"; }
-    
+
     @Override
     public String getBasicAttackDescription() { return "Deals 8-28 damage +20 Mana"; }
     @Override
@@ -173,54 +156,56 @@ class FireDragon extends Pet {
     public String getUltimateDescription() { return "Deals 300% damage, costs 15 HP (85 Mana)"; }
 }
 
+
+
 class WaterTurtle extends Pet {
     private int shieldStacks;
-    
+
     public WaterTurtle() {
         super("Water Turtle", "/Images/waterturtle.png", 120, 15, 15);
         this.shieldStacks = 0;
     }
-    
+
     @Override
     public String useBasicAttack(Enemy enemy) {
         int damage = rand.nextInt(attackPower) + 5;
         enemy.takeDamage(damage);
         increaseHealth(3);
         increaseMana(18);
-        return String.format("Water Splash deals %d damage, heals 3 HP! +18 Mana", damage);
+        return "Water Splash deals " + damage + " damage, heals 3 HP! +18 Mana";
     }
-    
+
     @Override
     public String useSkill(Enemy enemy) {
-        if (!useMana(35)) {
-            return "Not enough mana! Need 35 mana for Tidal Wave.";
-        }
+        if (!useMana(35)) return "Not enough mana! Need 35 mana for Tidal Wave.";
+
         int damage = (int)(attackPower * 1.5);
         enemy.takeDamage(damage);
         defense += 3;
         shieldStacks++;
-        return String.format("Tidal Wave deals %d damage and increases defense by 3! -35 Mana", damage);
+
+        return "Tidal Wave deals " + damage + " damage and increases defense by 3! -35 Mana";
     }
-    
+
     @Override
     public String useUltimate(Enemy enemy) {
-        if (!useMana(75)) {
-            return "Not enough mana! Need 75 mana for Tsunami.";
-        }
+        if (!useMana(75)) return "Not enough mana! Need 75 mana for Tsunami.";
+
         int damage = attackPower * 2;
         enemy.takeDamage(damage);
         increaseHealth(25);
         defense += 5;
-        return String.format("TSUNAMI deals %d damage, heals 25 HP, and increases defense by 5! -75 Mana", damage);
+
+        return "TSUNAMI deals " + damage + " damage, heals 25 HP, and increases defense by 5! -75 Mana";
     }
-    
+
     @Override
     public String getBasicAttackName() { return "Water Splash"; }
     @Override
     public String getSkillName() { return "Tidal Wave"; }
     @Override
     public String getUltimateName() { return "Tsunami"; }
-    
+
     @Override
     public String getBasicAttackDescription() { return "Deals 5-20 damage, heals 3 HP +18 Mana"; }
     @Override
@@ -229,62 +214,64 @@ class WaterTurtle extends Pet {
     public String getUltimateDescription() { return "Deals 200% damage, heals 25 HP, +5 defense (75 Mana)"; }
 }
 
+
 class EarthGolem extends Pet {
     private int rockArmor;
-    
+
     public EarthGolem() {
         super("Earth Golem", "/Images/earthgolem.png", 140, 10, 20);
         this.rockArmor = 0;
     }
-    
+
     @Override
     public String useBasicAttack(Enemy enemy) {
         int damage = rand.nextInt(attackPower) + 10;
         enemy.takeDamage(damage);
         rockArmor++;
         increaseMana(12);
-        return String.format("Rock Throw deals %d damage! +1 armor +12 Mana", damage);
+        return "Rock Throw deals " + damage + " damage! +1 armor +12 Mana";
     }
-    
+
     @Override
     public String useSkill(Enemy enemy) {
-        if (!useMana(50)) {
-            return "Not enough mana! Need 50 mana for Earthquake.";
-        }
+        if (!useMana(50)) return "Not enough mana! Need 50 mana for Earthquake.";
+
         int damage = (int)(attackPower * 1.6);
         enemy.takeDamage(damage);
         rockArmor += 3;
+
         if (rand.nextDouble() < 0.3) {
-            return String.format("Earthquake deals %d damage and STUNS the enemy! +3 armor -50 Mana", damage);
+            return "Earthquake deals " + damage + " damage and STUNS the enemy! +3 armor -50 Mana";
         }
-        return String.format("Earthquake deals %d damage! +3 armor -50 Mana", damage);
+
+        return "Earthquake deals " + damage + " damage! +3 armor -50 Mana";
     }
-    
+
     @Override
     public String useUltimate(Enemy enemy) {
-        if (!useMana(90)) {
-            return "Not enough mana! Need 90 mana for Mountain Crush.";
-        }
+        if (!useMana(90)) return "Not enough mana! Need 90 mana for Mountain Crush.";
+
         int damage = attackPower * 2 + defense + rockArmor;
         enemy.takeDamage(damage);
         rockArmor += 8;
-        return String.format("MOUNTAIN CRUSH deals %d massive damage! +8 armor -90 Mana", damage);
+
+        return "MOUNTAIN CRUSH deals " + damage + " massive damage! +8 armor -90 Mana";
     }
-    
+
     @Override
     public void takeDamage(int damage) {
         int actualDamage = Math.max(1, damage - defense - rockArmor);
         health -= actualDamage;
         if (health < 0) health = 0;
     }
-    
+
     @Override
     public String getBasicAttackName() { return "Rock Throw"; }
     @Override
     public String getSkillName() { return "Earthquake"; }
     @Override
     public String getUltimateName() { return "Mountain Crush"; }
-    
+
     @Override
     public String getBasicAttackDescription() { return "Deals 10-20 damage, +1 armor +12 Mana"; }
     @Override

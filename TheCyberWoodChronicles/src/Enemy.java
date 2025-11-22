@@ -47,9 +47,20 @@ public class Enemy {
 
     private void loadImage(String path) {
         URL url = getClass().getResource(path);
+
         if (url != null) {
-            image = new ImageIcon(url).getImage();
+            try {
+
+                image = new ImageIcon(url).getImage();
+            } catch (Exception e) {
+
+                System.err.println("Error loading image from URL: " + path + ". Using default placeholder.");
+                e.printStackTrace();
+                image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
+            }
         } else {
+
+            System.err.println("Resource not found: " + path + ". Using default placeholder.");
             image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
         }
     }
@@ -72,7 +83,7 @@ public class Enemy {
 
     public int performBossAttack() {
         specialAttackCooldown--;
-        
+
         if (specialAttackCooldown <= 0) {
             specialAttackCooldown = 3;
             int specialDamage = (int)(attackPower * 1.8);

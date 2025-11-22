@@ -43,12 +43,12 @@ public class BattleScreen extends JPanel {
 
     private void setupUI() {
         removeAll();
-        
+
         Image petImage = pet.getImage();
         Image enemyImage = enemy.getImage();
-        
+
         int imageSize = 150;
-        
+
         Image scaledPetImage = petImage.getScaledInstance(imageSize, imageSize, Image.SCALE_SMOOTH);
         Image scaledEnemyImage = enemyImage.getScaledInstance(imageSize, imageSize, Image.SCALE_SMOOTH);
 
@@ -242,7 +242,7 @@ public class BattleScreen extends JPanel {
         Timer enemyTurnTimer = new Timer(2000, e -> {
             enemyAttack();
             updateBars();
-            
+
             if (pet.getHealth() <= 0) {
                 handleDefeat();
             } else {
@@ -283,44 +283,44 @@ public class BattleScreen extends JPanel {
         }
 
         pet.takeDamage(enemyDamage);
-        
-        logLabel.setText("<html><div style='text-align: center;'>" + 
-                        logLabel.getText().replaceAll("<[^>]*>", "") + 
-                        "<br>" + enemyAttackText + "</div></html>");
+
+        logLabel.setText("<html><div style='text-align: center;'>" +
+                logLabel.getText().replaceAll("<[^>]*>", "") +
+                "<br>" + enemyAttackText + "</div></html>");
     }
 
     private void handleVictory() {
         String victoryMessage;
         if (enemy.isBoss()) {
             victoryMessage = "<html><div style='text-align: center; color: #90EE90;'>" +
-                           "MIRACULOUS VICTORY! You defeated " + enemy.getName() + "!<br>" +
-                           "+50 Happiness & +50 EXP</div></html>";
+                    "MIRACULOUS VICTORY! You defeated " + enemy.getName() + "!<br>" +
+                    "+50 Happiness & +50 EXP</div></html>";
             pet.increaseHappiness(50);
             petLevel.addExperience(50);
         } else {
             victoryMessage = "<html><div style='text-align: center; color: #90EE90;'>" +
-                           "VICTORY! You defeated " + enemy.getName() + "!<br>" +
-                           "+20 Happiness & +20 EXP</div></html>";
+                    "VICTORY! You defeated " + enemy.getName() + "!<br>" +
+                    "+20 Happiness & +20 EXP</div></html>";
             pet.increaseHappiness(20);
             petLevel.addExperience(20);
         }
-        
+
         logLabel.setText(victoryMessage);
         pet.evolve();
-        
+
         disableAbilityButtons();
-        
+
         Timer victoryTimer = new Timer(3000, e -> {
             if (StoryManager.getCurrentChapter() < 3) {
                 StoryManager.nextChapter();
                 window.switchScreen(new StoryScreen(window));
             } else {
-                JOptionPane.showMessageDialog(this, 
-                    "LEGENDARY! You completed CyberWood Chronicles on IMPOSSIBLE difficulty!\n\n" +
-                    "You defeated the impossible Lab Guardian!\n" +
-                    "Your " + pet.getName() + " has become a living legend!",
-                    "ULTIMATE VICTORY!", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "LEGENDARY! You completed CyberWood Chronicles on IMPOSSIBLE difficulty!\n\n" +
+                                "You defeated the impossible Lab Guardian!\n" +
+                                "Your " + pet.getName() + " has become a living legend!",
+                        "ULTIMATE VICTORY!",
+                        JOptionPane.INFORMATION_MESSAGE);
                 window.switchScreen(new MenuScreen(window));
             }
         });
@@ -330,11 +330,11 @@ public class BattleScreen extends JPanel {
 
     private void handleDefeat() {
         logLabel.setText("<html><div style='text-align: center; color: #FF6B6B;'>" +
-                        "CRUSHING DEFEAT! Your pet was obliterated!<br>" +
-                        "The enemy was too powerful...</div></html>");
-        
+                "CRUSHING DEFEAT! Your pet was obliterated!<br>" +
+                "The enemy was too powerful...</div></html>");
+
         disableAbilityButtons();
-        
+
         Timer defeatTimer = new Timer(3000, e -> {
             window.switchScreen(new MenuScreen(window));
         });
@@ -358,11 +358,11 @@ public class BattleScreen extends JPanel {
         petHealthBar.setValue(pet.getHealth());
         petHealthBar.setMaximum(pet.getMaxHealth());
         petHealthBar.setString(pet.getHealth() + "/" + pet.getMaxHealth());
-        
+
         petManaBar.setValue(pet.getMana());
         petManaBar.setMaximum(pet.getMaxMana());
         petManaBar.setString(pet.getMana() + "/" + pet.getMaxMana() + " Mana");
-        
+
         enemyHealthBar.setValue(enemy.getHealth());
         enemyHealthBar.setString(enemy.getHealth() + "/" + enemy.getMaxHealth());
 
@@ -386,26 +386,26 @@ public class BattleScreen extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+
         if (bg != null) {
             g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
         } else {
             g.setColor(new Color(30, 30, 50));
             g.fillRect(0, 0, getWidth(), getHeight());
         }
-        
+
         Graphics2D g2d = (Graphics2D) g;
-        
+
         g2d.setColor(new Color(0, 0, 0, 150));
         g2d.fillRoundRect(25, 80, 750, 250, 20, 20);
-        
+
         g2d.setColor(new Color(255, 255, 255, 50));
         g2d.setStroke(new BasicStroke(3));
         g2d.drawRoundRect(25, 80, 750, 250, 20, 20);
-        
+
         g2d.setColor(new Color(0, 0, 0, 180));
         g2d.fillRoundRect(25, 340, 750, 60, 15, 15);
-        
+
         g2d.setColor(new Color(255, 255, 255, 80));
         g2d.setStroke(new BasicStroke(2));
         g2d.drawRoundRect(25, 340, 750, 60, 15, 15);

@@ -130,3 +130,4 @@ public class Enemy {
         return name + " | Health: " + health + "/" + maxHealth + " | Attack Power: " + attackPower;
     }
 }
+

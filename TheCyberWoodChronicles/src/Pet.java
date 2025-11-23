@@ -2,7 +2,6 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import java.util.Random;
 
-
 public abstract class Pet {
     protected static final Random rand = new Random();
 
@@ -40,8 +39,7 @@ public abstract class Pet {
     public int getMaxMana() { return maxMana; }
 
     public Image getImage() {
-        java.net.URL url = getClass().getResource(imagePath);
-        return url != null ? new ImageIcon(url).getImage() : null;
+        return ResourceManager.loadImage(imagePath, 150, 150);
     }
 
     public void takeDamage(int damage) {
@@ -55,7 +53,7 @@ public abstract class Pet {
     }
 
     public void increaseHappiness(int amount) {
-        happiness = Math.min(100, happiness + amount);
+        happiness = Math.min(GameConstants.MAX_HAPPINESS, happiness + amount);
     }
 
     public void increaseMana(int amount) {
@@ -82,7 +80,6 @@ public abstract class Pet {
         }
     }
 
-
     public abstract String useBasicAttack(Enemy enemy);
     public abstract String useSkill(Enemy enemy);
     public abstract String useUltimate(Enemy enemy);
@@ -94,8 +91,10 @@ public abstract class Pet {
     public abstract String getBasicAttackDescription();
     public abstract String getSkillDescription();
     public abstract String getUltimateDescription();
-}
 
+    public abstract int getSkillManaCost();
+    public abstract int getUltimateManaCost();
+}
 
 class FireDragon extends Pet {
     private boolean rageMode;
@@ -109,13 +108,13 @@ class FireDragon extends Pet {
     public String useBasicAttack(Enemy enemy) {
         int damage = rand.nextInt(attackPower) + 8;
         enemy.takeDamage(damage);
-        increaseMana(20);
-        return "Claw Swipe deals " + damage + " damage! +20 Mana";
+        increaseMana(GameConstants.MANA_REGEN_BASIC_ATTACK);
+        return "Claw Swipe deals " + damage + " damage! +" + GameConstants.MANA_REGEN_BASIC_ATTACK + " Mana";
     }
 
     @Override
     public String useSkill(Enemy enemy) {
-        if (!useMana(45)) return "Not enough mana! Need 45 mana for Fire Breath.";
+        if (!useMana(getSkillManaCost())) return "Not enough mana! Need " + getSkillManaCost() + " mana for Fire Breath.";
 
         int damage = (int)(attackPower * 1.8);
         enemy.takeDamage(damage);
@@ -124,21 +123,21 @@ class FireDragon extends Pet {
         if (health < maxHealth * 0.3 && !rageMode) {
             rageMode = true;
             attackPower += 10;
-            return "Fire Breath deals " + damage + " damage! (Took 8 self-damage) -45 Mana RAGE MODE ACTIVATED!";
+            return "Fire Breath deals " + damage + " damage! (Took 8 self-damage) -" + getSkillManaCost() + " Mana RAGE MODE ACTIVATED!";
         }
 
-        return "Fire Breath deals " + damage + " damage! (Took 8 self-damage) -45 Mana";
+        return "Fire Breath deals " + damage + " damage! (Took 8 self-damage) -" + getSkillManaCost() + " Mana";
     }
 
     @Override
     public String useUltimate(Enemy enemy) {
-        if (!useMana(85)) return "Not enough mana! Need 85 mana for Inferno Blast.";
+        if (!useMana(getUltimateManaCost())) return "Not enough mana! Need " + getUltimateManaCost() + " mana for Inferno Blast.";
 
         int damage = attackPower * 3;
         enemy.takeDamage(damage);
         takeDamage(15);
 
-        return "INFERNO BLAST deals " + damage + " MASSIVE damage! (Took 15 self-damage) -85 Mana";
+        return "INFERNO BLAST deals " + damage + " MASSIVE damage! (Took 15 self-damage) -" + getUltimateManaCost() + " Mana";
     }
 
     @Override
@@ -149,14 +148,17 @@ class FireDragon extends Pet {
     public String getUltimateName() { return "Inferno Blast"; }
 
     @Override
-    public String getBasicAttackDescription() { return "Deals 8-28 damage +20 Mana"; }
+    public String getBasicAttackDescription() { return "Deals 8-28 damage +" + GameConstants.MANA_REGEN_BASIC_ATTACK + " Mana"; }
     @Override
-    public String getSkillDescription() { return "Deals 180% damage, costs 8 HP (45 Mana)"; }
+    public String getSkillDescription() { return "Deals 180% damage, costs 8 HP (" + getSkillManaCost() + " Mana)"; }
     @Override
-    public String getUltimateDescription() { return "Deals 300% damage, costs 15 HP (85 Mana)"; }
+    public String getUltimateDescription() { return "Deals 300% damage, costs 15 HP (" + getUltimateManaCost() + " Mana)"; }
+
+    @Override
+    public int getSkillManaCost() { return 45; }
+    @Override
+    public int getUltimateManaCost() { return 85; }
 }
-
-
 
 class WaterTurtle extends Pet {
     private int shieldStacks;
@@ -177,26 +179,26 @@ class WaterTurtle extends Pet {
 
     @Override
     public String useSkill(Enemy enemy) {
-        if (!useMana(35)) return "Not enough mana! Need 35 mana for Tidal Wave.";
+        if (!useMana(getSkillManaCost())) return "Not enough mana! Need " + getSkillManaCost() + " mana for Tidal Wave.";
 
         int damage = (int)(attackPower * 1.5);
         enemy.takeDamage(damage);
         defense += 3;
         shieldStacks++;
 
-        return "Tidal Wave deals " + damage + " damage and increases defense by 3! -35 Mana";
+        return "Tidal Wave deals " + damage + " damage and increases defense by 3! -" + getSkillManaCost() + " Mana";
     }
 
     @Override
     public String useUltimate(Enemy enemy) {
-        if (!useMana(75)) return "Not enough mana! Need 75 mana for Tsunami.";
+        if (!useMana(getUltimateManaCost())) return "Not enough mana! Need " + getUltimateManaCost() + " mana for Tsunami.";
 
         int damage = attackPower * 2;
         enemy.takeDamage(damage);
         increaseHealth(25);
         defense += 5;
 
-        return "TSUNAMI deals " + damage + " damage, heals 25 HP, and increases defense by 5! -75 Mana";
+        return "TSUNAMI deals " + damage + " damage, heals 25 HP, and increases defense by 5! -" + getUltimateManaCost() + " Mana";
     }
 
     @Override
@@ -209,11 +211,15 @@ class WaterTurtle extends Pet {
     @Override
     public String getBasicAttackDescription() { return "Deals 5-20 damage, heals 3 HP +18 Mana"; }
     @Override
-    public String getSkillDescription() { return "Deals 150% damage, +3 defense (35 Mana)"; }
+    public String getSkillDescription() { return "Deals 150% damage, +3 defense (" + getSkillManaCost() + " Mana)"; }
     @Override
-    public String getUltimateDescription() { return "Deals 200% damage, heals 25 HP, +5 defense (75 Mana)"; }
-}
+    public String getUltimateDescription() { return "Deals 200% damage, heals 25 HP, +5 defense (" + getUltimateManaCost() + " Mana)"; }
 
+    @Override
+    public int getSkillManaCost() { return 35; }
+    @Override
+    public int getUltimateManaCost() { return 75; }
+}
 
 class EarthGolem extends Pet {
     private int rockArmor;
@@ -234,28 +240,28 @@ class EarthGolem extends Pet {
 
     @Override
     public String useSkill(Enemy enemy) {
-        if (!useMana(50)) return "Not enough mana! Need 50 mana for Earthquake.";
+        if (!useMana(getSkillManaCost())) return "Not enough mana! Need " + getSkillManaCost() + " mana for Earthquake.";
 
         int damage = (int)(attackPower * 1.6);
         enemy.takeDamage(damage);
         rockArmor += 3;
 
         if (rand.nextDouble() < 0.3) {
-            return "Earthquake deals " + damage + " damage and STUNS the enemy! +3 armor -50 Mana";
+            return "Earthquake deals " + damage + " damage and STUNS the enemy! +3 armor -" + getSkillManaCost() + " Mana";
         }
 
-        return "Earthquake deals " + damage + " damage! +3 armor -50 Mana";
+        return "Earthquake deals " + damage + " damage! +3 armor -" + getSkillManaCost() + " Mana";
     }
 
     @Override
     public String useUltimate(Enemy enemy) {
-        if (!useMana(90)) return "Not enough mana! Need 90 mana for Mountain Crush.";
+        if (!useMana(getUltimateManaCost())) return "Not enough mana! Need " + getUltimateManaCost() + " mana for Mountain Crush.";
 
         int damage = attackPower * 2 + defense + rockArmor;
         enemy.takeDamage(damage);
         rockArmor += 8;
 
-        return "MOUNTAIN CRUSH deals " + damage + " massive damage! +8 armor -90 Mana";
+        return "MOUNTAIN CRUSH deals " + damage + " massive damage! +8 armor -" + getUltimateManaCost() + " Mana";
     }
 
     @Override
@@ -275,7 +281,12 @@ class EarthGolem extends Pet {
     @Override
     public String getBasicAttackDescription() { return "Deals 10-20 damage, +1 armor +12 Mana"; }
     @Override
-    public String getSkillDescription() { return "Deals 160% damage, 30% stun chance, +3 armor (50 Mana)"; }
+    public String getSkillDescription() { return "Deals 160% damage, 30% stun chance, +3 armor (" + getSkillManaCost() + " Mana)"; }
     @Override
-    public String getUltimateDescription() { return "Deals (200% ATK + DEF + armor) damage, +8 armor (90 Mana)"; }
+    public String getUltimateDescription() { return "Deals (200% ATK + DEF + armor) damage, +8 armor (" + getUltimateManaCost() + " Mana)"; }
+
+    @Override
+    public int getSkillManaCost() { return 50; }
+    @Override
+    public int getUltimateManaCost() { return 90; }
 }

@@ -31,14 +31,7 @@ public class ChoosePetScreen extends JPanel {
     }
 
     private void addPetButton(String petName, int x, int y, String imagePath) {
-        URL imgUrl = getClass().getResource(imagePath);
-        ImageIcon icon = null;
-
-        if (imgUrl != null) {
-            Image img = new ImageIcon(imgUrl).getImage();
-            img = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-            icon = new ImageIcon(img);
-        }
+        ImageIcon icon = ResourceManager.loadImageIcon(imagePath, 200, 200);
 
         int buttonWidth = icon != null ? icon.getIconWidth() : 150;
         int buttonHeight = icon != null ? icon.getIconHeight() + 20 : 50;
@@ -50,32 +43,36 @@ public class ChoosePetScreen extends JPanel {
         button.setFocusPainted(false);
 
         button.addActionListener(e -> {
-            switch (petName) {
-                case "Fire Dragon" -> GameWindow.pet = new FireDragon();
-                case "Water Turtle" -> GameWindow.pet = new WaterTurtle();
-                case "Earth Golem" -> GameWindow.pet = new EarthGolem();
+            Pet selectedPet = switch (petName) {
+                case "Fire Dragon" -> new FireDragon();
+                case "Water Turtle" -> new WaterTurtle();
+                case "Earth Golem" -> new EarthGolem();
+                default -> null;
+            };
+
+            if (selectedPet != null) {
+                window.getGameState().setCurrentPet(selectedPet);
+
+                String message = String.format(
+                        "You chose %s!\n\nAbilities:\n" +
+                                "• %s: %s\n" +
+                                "• %s: %s\n" +
+                                "• %s: %s\n\nBase Stats:\nHP: %d | ATK: %d | DEF: %d",
+                        selectedPet.getName(),
+                        selectedPet.getBasicAttackName(), selectedPet.getBasicAttackDescription(),
+                        selectedPet.getSkillName(), selectedPet.getSkillDescription(),
+                        selectedPet.getUltimateName(), selectedPet.getUltimateDescription(),
+                        selectedPet.getMaxHealth(), selectedPet.getAttackPower(), selectedPet.getDefense()
+                );
+
+                JOptionPane.showMessageDialog(this, message);
+
+                Timer battleTimer = new Timer(2000, evt -> {
+                    window.switchScreen(new BattleScreen(window));
+                });
+                battleTimer.setRepeats(false);
+                battleTimer.start();
             }
-            
-            Pet selectedPet = GameWindow.pet;
-            String message = String.format(
-                "You chose %s!\n\nAbilities:\n" +
-                "• %s: %s\n" +
-                "• %s: %s\n" +
-                "• %s: %s\n\nBase Stats:\nHP: %d | ATK: %d | DEF: %d",
-                selectedPet.getName(),
-                selectedPet.getBasicAttackName(), selectedPet.getBasicAttackDescription(),
-                selectedPet.getSkillName(), selectedPet.getSkillDescription(),
-                selectedPet.getUltimateName(), selectedPet.getUltimateDescription(),
-                selectedPet.getMaxHealth(), selectedPet.getAttackPower(), selectedPet.getDefense()
-            );
-            
-            JOptionPane.showMessageDialog(this, message);
-            
-            Timer battleTimer = new Timer(2000, evt -> {
-                window.switchScreen(new BattleScreen(window));
-            });
-            battleTimer.setRepeats(false);
-            battleTimer.start();
         });
 
         add(button);

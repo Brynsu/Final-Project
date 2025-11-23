@@ -1,13 +1,12 @@
 import javax.swing.*;
 
 public class GameWindow extends JFrame {
-
-    public static Pet pet;
-    public static Level petLevel = new Level();
+    private GameState gameState;
 
     public GameWindow() {
+        gameState = GameState.getInstance();
         setTitle("The CyberWood Chronicles");
-        setSize(850, 650);
+        setSize(GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setContentPane(new MenuScreen(this));
@@ -23,6 +22,10 @@ public class GameWindow extends JFrame {
     public void startBattle() {
         BattleScreen battle = new BattleScreen(this);
         switchScreen(battle);
+    }
+
+    public GameState getGameState() {
+        return gameState;
     }
 
     public static void main(String[] args) {
